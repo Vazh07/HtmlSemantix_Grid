@@ -1,0 +1,2 @@
+.row { height: 5em; margin: 10px 0; background-color: #FAE9E9;}
+.container>.row>div { border: 1px solid; background-color: #E2C3CF;}
