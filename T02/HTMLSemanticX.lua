@@ -181,9 +181,51 @@ function to_array(tbl)
   return is_array(tbl) and tbl or {tbl}
 end
 
+function miligramRound(colNumber)
+  --10
+  if(colNumber<= 10)then
+    return 10
+  --20
+  elseif(colNumber<= 20 and colNumber>= 10) then
+    return 20
+  --25
+  elseif(colNumber<= 25 and colNumber>= 20) then
+    return 25
+  --33
+  elseif(colNumber<= 33 and colNumber>= 25) then
+  return 33
+  --40
+  elseif(colNumber<= 40 and colNumber>= 33) then
+  return 40
+  --50
+  elseif(colNumber<= 50 and colNumber>= 40) then
+  return 50
+  --60
+  elseif(colNumber<= 60 and colNumber>= 50) then
+  return 60
+  --66
+  elseif(colNumber<= 66 and colNumber>= 60) then
+  return 66
+  --75
+  elseif(colNumber<= 75 and colNumber>= 66) then
+  return 75
+  --80
+  elseif(colNumber<= 80 and colNumber>= 75) then
+  return 80
+  --90
+  elseif(colNumber<= 90 and colNumber>= 80) then
+  return 90
+  --100
+  else
+    return 100
+  end
+end
+
 function cols(cols,type)
   local cols = to_array(cols)
   local cols_size = size(cols)
+  local isColsCalulated = false
+  local totalCols = 0
   for i = 1, cols_size do
     if(type==1) then
       if (cols[i]["@break"]) then
@@ -201,17 +243,62 @@ function cols(cols,type)
         end
         io.write('">')
       end
+      if (cols[i]:value()) then
+        io.write(trim(cols[i]:value()))
+      end
+      io.write('</div>')
     end
     if(type==2) then
-      io.write('<div class="column">')
+      if (cols[i]["@break"]) then
+        io.write('</div><div class="column"></div><div class="row">')
+      else
+        io.write('<div class="column')
+        if (cols[i]["@cols"]) then
+          io.write(' column-'..miligramRound(math.floor((cols[i]["@cols"]*100/12)+0.5)))
+        end
+        if (cols[i]["@auto"]) then
+          --io.write('-md-auto')
+        end
+        io.write('">')
+        if (cols[i]:value()) then
+          io.write(trim(cols[i]:value()))
+        end
+        io.write('</div>')
+      end
     end
     if(type==3) then
-      io.write('<div class="uk-width-1-"'+cols_size+">")
+      if(not isColsCalulated) then
+        isColsCalulated = true
+        for j = 1, cols_size do
+          if (cols[j]["@cols"]) then
+            totalCols = totalCols + cols[j]["@cols"]
+          else
+            totalCols = totalCols + 1
+          end
+          if (totalCols > 10) then
+            totalCols = 10
+          end
+        end
+      end
+      if (cols[i]["@break"]) then
+        io.write('</div><div class="uk-width-1-10"></div><div class="uk-grid uk-text-center uk-flex flex-container">')
+      else
+        if (cols[i]["@cols"]) then
+          io.write('<div class="uk-width-1-'..cols_size)
+          --io.write('<div class="uk-width-'..cols[i]["@cols"]..'-'..totalCols)
+        else
+          io.write('<div class="uk-width-1-'..cols_size)
+        end
+        if (cols[i]["@auto"]) then
+          --io.write('-md-auto')
+        end
+        io.write('">')
+        if (cols[i]:value()) then
+          io.write(trim(cols[i]:value()))
+        end
+        io.write('</div>')
+      end
     end 
-    if (cols[i]:value()) then
-      io.write(trim(cols[i]:value()))
-    end
-    io.write('</div>')
   end
 end
 
@@ -232,10 +319,54 @@ function rows(rows,type)
       io.write('">')
     end
     if(type==2) then
-      io.write('<div class="row">')
+      io.write('<div class="row')
+      if (rows[i]["@justify"]) then
+        io.write(' flex-container')
+        if(rows[i]["@justify"]=='start') then
+          io.write(' flex-start')
+        end
+        if(rows[i]["@justify"]=='center') then
+          io.write(' flex-center')
+        end
+        if(rows[i]["@justify"]=='end') then
+          io.write(' flex-end')
+        end
+        if(rows[i]["@justify"]=='around') then
+          io.write(' flex-around')
+        end
+        if(rows[i]["@justify"]=='between') then
+          io.write(' flex-between')
+        end
+      end
+      io.write('">')
     end
     if(type==3)then
-      io.write('<div class="uk-grid-medium>')
+      io.write('<div class="uk-grid uk-text-center uk-flex flex-container')
+      if (rows[i]["@cols"]) then
+        io.write(' row-cols-'..rows[i]["@cols"])
+      end
+      if (rows[i]["@justify"]) then
+        io.write(' uk-flex-')
+        if(rows[i]["@justify"]=='start') then
+          io.write('left')
+        end
+        if(rows[i]["@justify"]=='center') then
+          io.write('center')
+        end
+        if(rows[i]["@justify"]=='end') then
+          io.write('right')
+        end
+        if(rows[i]["@justify"]=='around') then
+          io.write('around')
+        end
+        if(rows[i]["@justify"]=='between') then
+          io.write('between')
+        end
+      end
+      if (rows[i]["@align"]) then
+        io.write(' align-items-'..rows[i]["@align"])
+      end
+      io.write('">')
     end 
     if (rows[i].col) then
       cols(rows[i].col,type)
@@ -255,7 +386,10 @@ function container(elem,type)
   if(type == 2) then
    io.write('<div class="container">')
  end
- if (elem.row) then
+ if(type==3) then
+  io.write('<div class="uk-container">')
+end
+if (elem.row) then
   rows(elem.row,type)
 end
 io.write('</div>')
@@ -286,6 +420,23 @@ function head(elem,type)
     io.write('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.css">')
     io.write('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.4.1/milligram.css">')
   end
+  if(type == 3) then 
+    io.write('<meta charset="utf-8">')
+    io.write('<meta name="viewport" content="width=device-width, initial-scale=1">')
+    io.write('<link rel="stylesheet" href="./uikit-3.16.14/css/uikit.min.css" />')
+    io.write('<script src="./uikit-3.16.14/js/uikit.min.js"></script>')
+    io.write('<script src="./uikit-3.16.14/js/uikit-icons.min.js"></script>')
+  end
+  if(type==2 or type==3) then
+    io.write('<style>')
+    io.write('.flex-container{display: flex;}')
+    io.write('.flex-center{justify-content: center;}')
+    io.write('.flex-start{justify-content: flex-start;}')
+    io.write('.flex-end{justify-content: flex-end;}')
+    io.write('.flex-around{justify-content: space-around;}')
+    io.write('.flex-between{justify-content: space-between;}')
+    io.write('</style>')
+  end
   io.write('</head>')
 end
 
@@ -303,16 +454,17 @@ end
 
 function main()
   local xml = newParser()
-  local xhtml = 'grid1'
-  local indexFile = assert(io.open(xhtml..'.xhtml', 'rb'))
-  local content = indexFile:read('*all')
-  local root = xml:ParseXmlText(content)
-  if (root.html) then
+  for i = 1, 10 do
+    local xhtml = 'grid'..i
+    local type = 2
+    local indexFile = assert(io.open(xhtml..'.xhtml', 'rb'))
+    local content = indexFile:read('*all')
+    local root = xml:ParseXmlText(content)
+    if (root.html) then
     -- 1 = Bootstrap
     -- 2 = Miligram
     -- 3 = UiKit
-    type = 2
-    route = ""
+    local route = ""
     if(type==1) then
       route = './html/bootstrap/'..xhtml..'.html'
     elseif(type==2)then
@@ -325,9 +477,10 @@ function main()
       io.output(file)
     end
     html(root.html,type)
-    file:close()
+    --file:close()
     io.close(file)
   end
+end
 end
 
 main()
