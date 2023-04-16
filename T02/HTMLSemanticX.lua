@@ -182,11 +182,15 @@ function to_array(tbl)
 end
 
 function miligramRound(colNumber)
+  print('miligramRound'..colNumber)
   --10
   if(colNumber<= 10)then
     return 10
+  --15
+  elseif(colNumber<= 15 and colNumber>= 10) then
+    return 15
   --20
-  elseif(colNumber<= 20 and colNumber>= 10) then
+  elseif(colNumber<= 20 and colNumber>= 15) then
     return 20
   --25
   elseif(colNumber<= 25 and colNumber>= 20) then
@@ -197,23 +201,32 @@ function miligramRound(colNumber)
   --40
   elseif(colNumber<= 40 and colNumber>= 33) then
   return 40
+  --45
+  elseif(colNumber<= 45 and colNumber>= 40) then
+  return 45
   --50
-  elseif(colNumber<= 50 and colNumber>= 40) then
+  elseif(colNumber<= 50 and colNumber>= 45) then
   return 50
+  --55
+   elseif(colNumber<= 55 and colNumber>= 50) then
+  return 55
   --60
-  elseif(colNumber<= 60 and colNumber>= 50) then
+  elseif(colNumber<= 60 and colNumber>= 55) then
   return 60
   --66
-  elseif(colNumber<= 66 and colNumber>= 60) then
+  elseif(colNumber<= 65 and colNumber>= 60) then
   return 66
   --75
-  elseif(colNumber<= 75 and colNumber>= 66) then
+  elseif(colNumber<= 75 and colNumber>= 65) then
   return 75
   --80
   elseif(colNumber<= 80 and colNumber>= 75) then
   return 80
+  --85
+  elseif(colNumber<= 85 and colNumber>= 80) then
+  return 85
   --90
-  elseif(colNumber<= 90 and colNumber>= 80) then
+  elseif(colNumber<= 90 and colNumber>= 85) then
   return 90
   --100
   else
@@ -472,6 +485,7 @@ function main()
     elseif(type==3)then
       route = './html/uiKit/'..xhtml..'.html'
     end
+    print('Processing '..xhtml..'...')
     if(string.len(route)>0)then
       file = io.open(route, "w+")
       io.output(file)
